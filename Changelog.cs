@@ -16,22 +16,22 @@ public static class Changelog {
     private static bool _isOldExpanded;
 
     private static void Changelogs() {
-        ChangelogFor(9.3f, "0.9.3.0", "Added optional precise position sharing when performing looping emotes.");
-        ChangelogFor(9.2f, "0.9.2.0", "Added optional stationary minion position sharing.");
-        ChangelogFor(9.13f, "0.9.1.3", "Fix Plus/Minus buttons applying change multiple times per click.");
-        ChangelogFor(9.12f, "0.9.1.2", "Apply temp offsets from synced players to gpose clones.");
+        ChangelogFor(9.3f, "0.9.3.0", "添加了可选的精确定位共享功能，当执行循环情感动作时生效。");
+        ChangelogFor(9.2f, "0.9.2.0", "增加了同步静态宠物位置的选项。");
+        ChangelogFor(9.13f, "0.9.1.3", "修复单击加号/减号按钮时会连击的问题。");
+        ChangelogFor(9.12f, "0.9.1.2", "将来自同步玩家的临时偏移应用到集体动作模式。");
         ChangelogFor(9.1f, "0.9.1.0", () => {
-            C("Added Temporary Offsets");
-            C("Allows setting offsets that are not saved into configs.", 1);
-            C("Overrides all other active offsets.", 1);
-            C("Edited from overlay window.", 1);
+            C("添加临时偏移：");
+            C("允许设置不会保存到配置中的偏移。", 1);
+            C("可覆盖所有其他激活的偏移。", 1);
+            C("从叠加层窗口编辑。", 1);
             C("/heels temp", 2);
-            C("Can lock and customize overlay window in the plugin settings.", 2);
+            C("可以在插件设置中锁定和自定义叠加层窗口。", 2);
         });
-        ChangelogFor(9.08f, "0.9.0.8", "Fixed reporting emote offsets to other plugins.");
+        ChangelogFor(9.08f, "0.9.0.8", "修正了向其他插件报告情感动作偏移时出现的问题。");
         ChangelogFor(9.07f, "0.9.0.7", () => {
-            C("Added an option to allow group offsets to partially apply to minions.");
-            C("Removed legacy data from synced offsets.");
+            C("在设置里添加了一个选项，允许在组分配中将偏移应用于宠物。");
+            C("已删除用于同步偏移的旧数据。");
         });
         ChangelogFor(9.06f, "0.9.0.6", "Attempt to fix the positioning of other players in GPose.");
         ChangelogFor(9.05f, "0.9.0.5", () => {
@@ -116,11 +116,11 @@ public static class Changelog {
     private static void Title() {
         if (_displayedTitle) return;
         _displayedTitle = true;
-        ImGui.Text("Changelog");
+        ImGui.Text("更新日志");
 
         if (!_showAll && _config != null) {
             ImGui.SameLine();
-            if (ImGui.SmallButton("Dismiss")) _config.DismissedChangelog = _latestChangelog;
+            if (ImGui.SmallButton("消除")) _config.DismissedChangelog = _latestChangelog;
         }
 
         ImGuiExt.Separator();
@@ -130,7 +130,7 @@ public static class Changelog {
         _configIndex++;
         if (version > _latestChangelog) _latestChangelog = version;
         if (!_showAll && _config != null && _config.DismissedChangelog >= version) return;
-        if (_configIndex == 4) _isOldExpanded = ImGui.TreeNodeEx("Old Versions", ImGuiTreeNodeFlags.NoTreePushOnOpen);
+        if (_configIndex == 4) _isOldExpanded = ImGui.TreeNodeEx("旧版本", ImGuiTreeNodeFlags.NoTreePushOnOpen);
         if (_configIndex >= 4 && _isOldExpanded == false) return;
         Title();
         ImGui.Text($"{label}:");

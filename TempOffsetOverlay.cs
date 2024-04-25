@@ -85,13 +85,13 @@ public sealed unsafe class TempOffsetOverlay : Window {
         ImGui.PushItemWidth(ImGui.GetContentRegionAvail().X);
 
         edited |= ImGuiExt.FloatEditor("##height", ref tempOffset.Y, 0.0001f, forcePlusMinus: config.TempOffsetWindowPlusMinus);
-        if (config.TempOffsetWindowTooltips && ImGui.IsItemHovered()) ImGui.SetTooltip("Height");
+        if (config.TempOffsetWindowTooltips && ImGui.IsItemHovered()) ImGui.SetTooltip("高度");
 
         using (ImRaii.Disabled(activeEmote == null)) {
             edited |= ImGuiExt.FloatEditor("##forward", ref tempOffset.Z, 0.0001f, forcePlusMinus: config.TempOffsetWindowPlusMinus);
-            if (config.TempOffsetWindowTooltips && ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled)) ImGui.SetTooltip("Forward / Backward");
+            if (config.TempOffsetWindowTooltips && ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled)) ImGui.SetTooltip("循环动作：前/后");
             edited |= ImGuiExt.FloatEditor("##side", ref tempOffset.X, -0.0001f, forcePlusMinus: config.TempOffsetWindowPlusMinus);
-            if (config.TempOffsetWindowTooltips && ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled)) ImGui.SetTooltip("Left / Right");
+            if (config.TempOffsetWindowTooltips && ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled)) ImGui.SetTooltip("循环动作：左/右");
             var rot = tempOffset.R * 180f / MathF.PI;
 
             if (ImGuiExt.FloatEditor("##rotation", ref rot, format: "%.0f", customPlusMinus: 1, forcePlusMinus: config.TempOffsetWindowPlusMinus)) {
@@ -100,11 +100,11 @@ public sealed unsafe class TempOffsetOverlay : Window {
                 if (rot >= 360) rot -= 360;
                 tempOffset.R = rot * MathF.PI / 180f;
             }
-            if (config.TempOffsetWindowTooltips && ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled)) ImGui.SetTooltip("Rotation");
+            if (config.TempOffsetWindowTooltips && ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled)) ImGui.SetTooltip("循环动作：旋转");
         }
 
         using (ImRaii.Disabled(showingActive)) {
-            if (ImGui.Button(ImGui.GetContentRegionAvail().X < 105 * ImGuiHelpers.GlobalScale ? "Reset" : "Reset Offset", new Vector2(ImGui.CalcItemWidth(), ImGui.GetTextLineHeightWithSpacing()))) {
+            if (ImGui.Button(ImGui.GetContentRegionAvail().X < 105 * ImGuiHelpers.GlobalScale ? "重置" : "重置偏移", new Vector2(ImGui.CalcItemWidth(), ImGui.GetTextLineHeightWithSpacing()))) {
                 Plugin.TempOffsets[obj->GameObject.ObjectIndex] = null;
                 Plugin.TempOffsetEmote[obj->GameObject.ObjectIndex] = null;
             }

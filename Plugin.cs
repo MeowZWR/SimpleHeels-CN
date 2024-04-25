@@ -67,7 +67,7 @@ public unsafe class Plugin : IDalamudPlugin {
         PluginService.PluginInterface.UiBuilder.DisableCutsceneUiHide = Config.ConfigInCutscene;
 
         windowSystem = new WindowSystem(Assembly.GetExecutingAssembly().FullName);
-        configWindow = new ConfigWindow($"{Name} | Config", this, Config) {
+        configWindow = new ConfigWindow($"{Name} | 配置", this, Config) {
 #if DEBUG
             IsOpen = Config.DebugOpenOnStartup
 #endif
@@ -83,7 +83,7 @@ public unsafe class Plugin : IDalamudPlugin {
         pluginInterface.UiBuilder.Draw += windowSystem.Draw;
         pluginInterface.UiBuilder.OpenConfigUi += () => OnCommand(string.Empty, string.Empty);
 
-        PluginService.Commands.AddHandler("/heels", new CommandInfo(OnCommand) { HelpMessage = $"Open the {Name} config window.", ShowInHelp = true });
+        PluginService.Commands.AddHandler("/heels", new CommandInfo(OnCommand) { HelpMessage = $"打开 {Name} 的配置窗口。", ShowInHelp = true });
         
         ApiProvider.Init(this);
         PluginService.Framework.Update += OnFrameworkUpdate;

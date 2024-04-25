@@ -130,7 +130,7 @@ public class ConfigWindow : Window {
             var getModDir = PluginService.PluginInterface.GetIpcSubscriber<string>("Penumbra.GetModDirectory");
             PenumbraModFolder = getModDir.InvokeFunc();
             PenumbraModFolder = PenumbraModFolder.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar).Trim(Path.DirectorySeparatorChar) + Path.DirectorySeparatorChar;
-            PluginService.Log.Debug($"Penumbra Folder: {PenumbraModFolder}");
+            PluginService.Log.Debug($"Penumbra文件：{PenumbraModFolder}");
         } catch {
             PenumbraModFolder = null;
         }
@@ -157,7 +157,7 @@ public class ConfigWindow : Window {
                 }
 
                 if (ImGui.BeginPopupContextItem()) {
-                    if (ImGui.Selectable($"Remove '{name} @ {world.Name.RawString}' from Config")) {
+                    if (ImGui.Selectable($"从设置中移除“{name} @ {world.Name.RawString}”")) {
                         characters.Remove(name);
                         if (selectedCharacter == characterConfig) selectedCharacter = null;
                         if (characters.Count == 0) {
@@ -205,7 +205,7 @@ public class ConfigWindow : Window {
         }
 
         if (config.Groups.Count > 0) {
-            ImGui.TextDisabled($"Group Assignments");
+            ImGui.TextDisabled($"组分配");
             ImGuiExt.Separator();
             var arr = config.Groups.ToArray();
 
@@ -226,14 +226,14 @@ public class ConfigWindow : Window {
                 if (ImGui.BeginPopupContextItem()) {
                     if (config.Groups.Count > 1) {
                         if (i > 0) {
-                            if (ImGui.Selectable($"Move Up")) {
+                            if (ImGui.Selectable($"上移")) {
                                 config.Groups.Remove(filterConfig);
                                 config.Groups.Insert(i - 1, filterConfig);
                             }
                         }
 
                         if (i < config.Groups.Count - 1) {
-                            if (ImGui.Selectable($"Move Down")) {
+                            if (ImGui.Selectable($"下移")) {
                                 config.Groups.Remove(filterConfig);
                                 config.Groups.Insert(i + 1, filterConfig);
                             }
@@ -243,14 +243,14 @@ public class ConfigWindow : Window {
                     }
 
                     ImGui.PushStyleColor(ImGuiCol.Text, ImGui.GetColorU32(ImGui.GetIO().KeyShift ? ImGuiCol.Text : ImGuiCol.TextDisabled));
-                    if (ImGui.Selectable($"Delete group '{filterConfig.Label}'") && ImGui.GetIO().KeyShift) {
+                    if (ImGui.Selectable($"删除组 '{filterConfig.Label}'") && ImGui.GetIO().KeyShift) {
                         if (selectedGroup == filterConfig) selectedGroup = null;
                         config.Groups.Remove(filterConfig);
                     }
 
                     ImGui.PopStyleColor();
                     if (!ImGui.GetIO().KeyShift && ImGui.IsItemHovered()) {
-                        ImGui.SetTooltip("Hold SHIFT to delete.");
+                        ImGui.SetTooltip("按住SHIFT键点击删除。");
                     }
 
                     ImGui.EndPopup();
@@ -267,11 +267,11 @@ public class ConfigWindow : Window {
                 var activePlayer = PluginService.Objects.FirstOrDefault(t => t is PlayerCharacter playerCharacter && playerCharacter.Name.TextValue == selectedName && playerCharacter.HomeWorld.Id == selectedWorld);
 
                 if (activePlayer is not PlayerCharacter pc) {
-                    ImGui.TextDisabled("Character is not currently in world.");
+                    ImGui.TextDisabled("角色当前不存在于世界中。");
                     return;
                 }
 
-                ImGui.TextDisabled($"Character: {pc:X8}");
+                ImGui.TextDisabled($"角色：{pc:X8}");
                 if (ImGui.IsItemClicked()) ImGui.SetClipboardText($"{pc.Address:X}");
 
                 unsafe {
@@ -280,7 +280,7 @@ public class ConfigWindow : Window {
                     Util.ShowStruct(character);
                     var realPosition = obj->Position;
                     if (obj->DrawObject == null) {
-                        ImGui.TextDisabled("Character is not currently being drawn.");
+                        ImGui.TextDisabled("角色当前没有被绘制。");
                         return;
                     }
 
@@ -327,10 +327,10 @@ public class ConfigWindow : Window {
 
                             ImGui.Unindent();
                         } else {
-                            ImGui.TextDisabled("Player is not a 'Human'");
+                            ImGui.TextDisabled("玩家不是一个“人类”");
                         }
                     } else {
-                        ImGui.TextDisabled("Player is not a 'Character'");
+                        ImGui.TextDisabled("玩家不是一个“角色”");
                     }
                 }
             } finally {
@@ -352,13 +352,13 @@ public class ConfigWindow : Window {
             ImGui.PushStyleColor(ImGuiCol.Button, ImGuiColors.DalamudRed * new Vector4(1, 1, 1, 0.3f));
             ImGui.PushStyleColor(ImGuiCol.ButtonActive, ImGuiColors.DalamudRed * new Vector4(1, 1, 1, 0.3f));
             ImGui.PushStyleColor(ImGuiCol.ButtonHovered, ImGuiColors.DalamudRed * new Vector4(1, 1, 1, 0.3f));
-            ImGui.Button($"{plugin.Name} is currently disabled. No offsets will be applied.", new Vector2(ImGui.GetContentRegionAvail().X, 32 * ImGuiHelpers.GlobalScale));
+            ImGui.Button($"{plugin.Name} 当前已禁用。不会应用任何偏移值。", new Vector2(ImGui.GetContentRegionAvail().X, 32 * ImGuiHelpers.GlobalScale));
             ImGui.PopStyleColor(3);
         }
 
         ImGui.BeginGroup();
         {
-            if (ImGui.BeginChild("character_select", ImGuiHelpers.ScaledVector2(240, 0) - iconButtonSize with { X = 0 }, true)) {
+            if (ImGui.BeginChild("character_select", ImGuiHelpers.ScaledVector2(120, 0) - iconButtonSize with { X = 0 }, true)) {
                 DrawCharacterList();
             }
 
@@ -373,7 +373,7 @@ public class ConfigWindow : Window {
                     }
                 }
 
-                if (ImGui.IsItemHovered()) ImGui.SetTooltip("Add current character");
+                if (ImGui.IsItemHovered()) ImGui.SetTooltip("添加你的当前角色");
 
                 ImGui.SameLine();
                 if (ImGuiComponents.IconButton(FontAwesomeIcon.DotCircle)) {
@@ -382,7 +382,7 @@ public class ConfigWindow : Window {
                     }
                 }
 
-                if (ImGui.IsItemHovered()) ImGui.SetTooltip("Add targeted character");
+                if (ImGui.IsItemHovered()) ImGui.SetTooltip("添加当前选中角色");
                 ImGui.SameLine();
             }
 
@@ -398,7 +398,7 @@ public class ConfigWindow : Window {
                 }
             }
 
-            if (ImGui.IsItemHovered()) ImGui.SetTooltip("Create new group assignment");
+            if (ImGui.IsItemHovered()) ImGui.SetTooltip("新建组分配");
             ImGui.SameLine();
 
             if (ImGuiComponents.IconButton(FontAwesomeIcon.Cog)) {
@@ -410,18 +410,18 @@ public class ConfigWindow : Window {
                 selectedGroup = null;
             }
 
-            if (ImGui.IsItemHovered()) ImGui.SetTooltip("Plugin Options");
+            if (ImGui.IsItemHovered()) ImGui.SetTooltip("插件选项");
             iconButtonSize = ImGui.GetItemRectSize() + ImGui.GetStyle().ItemSpacing;
 
             if (!config.HideKofi) {
                 ImGui.SameLine();
                 if (kofiButtonOffset > 0) ImGui.SetCursorPosX(MathF.Max(ImGui.GetCursorPosX(), charaListPos - kofiButtonOffset + ImGui.GetStyle().WindowPadding.X));
-                if (ImGuiComponents.IconButtonWithText(FontAwesomeIcon.Coffee, "Support", new Vector4(1, 0.35f, 0.35f, 1f), new Vector4(1, 0.35f, 0.35f, 0.9f), new Vector4(1, 0.35f, 0.35f, 75f))) {
+                if (ImGuiComponents.IconButtonWithText(FontAwesomeIcon.Coffee, "支持", new Vector4(1, 0.35f, 0.35f, 1f), new Vector4(1, 0.35f, 0.35f, 0.9f), new Vector4(1, 0.35f, 0.35f, 75f))) {
                     Util.OpenLink("https://ko-fi.com/Caraxi");
                 }
 
                 if (ImGui.IsItemHovered()) {
-                    ImGui.SetTooltip("Support on Ko-fi");
+                    ImGui.SetTooltip("到Ko-fi支持");
                 }
 
                 kofiButtonOffset = ImGui.GetItemRectSize().X;
@@ -435,27 +435,27 @@ public class ConfigWindow : Window {
                 ShowDebugInfo();
                 DrawCharacterView(selectedCharacter);
             } else if (selectedGroup != null) {
-                if (ImGui.Checkbox($"Enable Offsets for Group", ref selectedGroup.Enabled)) {
+                if (ImGui.Checkbox($"为组启用偏移", ref selectedGroup.Enabled)) {
                     Plugin.RequestUpdateAll();
                 }
 
                 if (selectedGroup is { Enabled: false }) {
                     ImGui.SameLine();
-                    ImGui.TextColored(ImGuiColors.DalamudRed, "This config is disabled.");
+                    ImGui.TextColored(ImGuiColors.DalamudRed, "此配置已禁用。");
                 }
 
-                ImGui.InputText("Group Label", ref selectedGroup.Label, 50);
+                ImGui.InputText("组标签", ref selectedGroup.Label, 50);
                 ImGuiExt.Separator();
-                ImGui.Text("Apply group to characters using:");
+                ImGui.Text("按性别将此组应用到角色：");
                 ImGui.Indent();
 
-                if (ImGui.Checkbox("Masculine Model", ref selectedGroup.MatchMasculine)) {
+                if (ImGui.Checkbox("男性模型", ref selectedGroup.MatchMasculine)) {
                     if (selectedGroup is { MatchFeminine: false, MatchMasculine: false }) {
                         selectedGroup.MatchFeminine = true;
                     }
                 }
 
-                if (ImGui.Checkbox("Feminine Model", ref selectedGroup.MatchFeminine)) {
+                if (ImGui.Checkbox("女性模型", ref selectedGroup.MatchFeminine)) {
                     if (selectedGroup is { MatchFeminine: false, MatchMasculine: false }) {
                         selectedGroup.MatchMasculine = true;
                     }
@@ -463,11 +463,11 @@ public class ConfigWindow : Window {
 
                 ImGui.Unindent();
 
-                ImGui.TextColored(ImGui.ColorConvertU32ToFloat4(selectedGroup.Clans.Count == 0 ? ImGui.GetColorU32(ImGuiCol.TextDisabled) : ImGui.GetColorU32(ImGuiCol.Text)), "Apply group to characters of the clans:");
+                ImGui.TextColored(ImGui.ColorConvertU32ToFloat4(selectedGroup.Clans.Count == 0 ? ImGui.GetColorU32(ImGuiCol.TextDisabled) : ImGui.GetColorU32(ImGuiCol.Text)), "按种族将此组应用到角色：");
 
                 if (selectedGroup.Clans.Count == 0) {
                     ImGui.SameLine();
-                    ImGuiComponents.HelpMarker($"This group will apply to all characters{(selectedGroup.MatchFeminine && selectedGroup.MatchMasculine ? "" : selectedGroup.MatchFeminine ? " using a feminine model" : " using a masculine model")} as no clan is selected.");
+                    ImGuiComponents.HelpMarker($"此组将应用于所有角色{(selectedGroup.MatchFeminine && selectedGroup.MatchMasculine ? "" : selectedGroup.MatchFeminine ? "（女性模型）" : "（男性模型）")} 因为还没有选择种族。");
                 }
 
                 ImGui.Indent();
@@ -496,7 +496,7 @@ public class ConfigWindow : Window {
 
                 ImGui.Unindent();
 
-                if (ImGui.CollapsingHeader("Name Matching")) {
+                if (ImGui.CollapsingHeader("名称匹配")) {
                     var nameMatchCharacter = -1;
                     foreach (var c in selectedGroup.Characters.ToArray()) {
                         ImGui.PushID($"group_character_{++nameMatchCharacter}");
@@ -506,7 +506,7 @@ public class ConfigWindow : Window {
 
                         ImGui.SameLine();
                         ImGui.SetNextItemWidth(ImGuiHelpers.GlobalScale * 140);
-                        if (ImGui.BeginCombo("##world", c.World == ushort.MaxValue ? "Non Player" : PluginService.Data.GetExcelSheet<World>()?.GetRow(c.World)?.Name.RawString ?? $"World#{c.World}", ImGuiComboFlags.HeightLargest)) {
+                        if (ImGui.BeginCombo("##world", c.World == ushort.MaxValue ? "非玩家" : PluginService.Data.GetExcelSheet<World>()?.GetRow(c.World)?.Name.RawString ?? $"World#{c.World}", ImGuiComboFlags.HeightLargest)) {
                             var appearing = ImGui.IsWindowAppearing();
 
                             if (appearing) {
@@ -515,7 +515,7 @@ public class ConfigWindow : Window {
                             }
 
                             ImGui.SetNextItemWidth(ImGuiHelpers.GlobalScale * 140);
-                            ImGui.InputTextWithHint("##search", "Search...", ref groupNameMatchingWorldSearch, 25);
+                            ImGui.InputTextWithHint("##search", "搜索...", ref groupNameMatchingWorldSearch, 25);
                             var s = ImGui.GetItemRectSize();
                             ImGuiExt.Separator();
 
@@ -544,7 +544,7 @@ public class ConfigWindow : Window {
                                     }
                                 }
 
-                                World("Non Player", ushort.MaxValue);
+                                World("非玩家", ushort.MaxValue);
                                 foreach (var w in PluginService.Data.GetExcelSheet<World>()!.Where(w => w.IsPublic).OrderBy(w => w.DataCenter.Value?.Name.RawString).ThenBy(w => w.Name.RawString)) {
                                     World(w.Name.RawString, w.RowId, w.DataCenter.Value);
                                 }
@@ -581,7 +581,7 @@ public class ConfigWindow : Window {
                             }
                         }
 
-                        if (ImGui.IsItemHovered()) ImGui.SetTooltip("Add current character");
+                        if (ImGui.IsItemHovered()) ImGui.SetTooltip("添加当前玩家");
 
                         ImGui.SameLine();
                         if (ImGuiComponents.IconButton(FontAwesomeIcon.DotCircle)) {
@@ -594,7 +594,7 @@ public class ConfigWindow : Window {
                             }
                         }
 
-                        if (ImGui.IsItemHovered()) ImGui.SetTooltip("Add targeted character");
+                        if (ImGui.IsItemHovered()) ImGui.SetTooltip("添加目标玩家");
                         ImGui.SameLine();
                     }
                     
@@ -606,73 +606,73 @@ public class ConfigWindow : Window {
             } else {
                 var changelogVisible = Changelog.Show(config);
 
-                ImGui.Text("SimpleHeels Options");
+                ImGui.Text("SimpleHeels 选项");
 
                 if (!changelogVisible) {
                     ImGui.SameLine();
                     ImGui.SetCursorPosX(ImGui.GetContentRegionMax().X - ImGui.CalcTextSize("changelogs").X - ImGui.GetStyle().FramePadding.X * 2);
-                    if (ImGui.SmallButton("changelogs")) {
+                    if (ImGui.SmallButton("查看更新日志")) {
                         config.DismissedChangelog = 0f;
                     }
                 }
 
                 ImGuiExt.Separator();
 
-                if (ImGui.Checkbox("Enabled", ref config.Enabled)) {
+                if (ImGui.Checkbox("启用", ref config.Enabled)) {
                     Plugin.RequestUpdateAll();
                 }
 
                 ImGui.SameLine();
-                ImGuiComponents.HelpMarker("Can be toggled using commands:\n\t/heels toggle\n\t/heels enable\n\t/heels disable");
-                ImGui.Checkbox("Hide Ko-fi Support button", ref config.HideKofi);
-                if (ImGui.Checkbox("Use model assigned offsets", ref config.UseModelOffsets)) {
+                ImGuiComponents.HelpMarker("可以使用命令来切换：\n\t/heels toggle\n\t/heels enable\n\t/heels disable");
+                ImGui.Checkbox("隐藏Ko-fi支持按钮", ref config.HideKofi);
+                if (ImGui.Checkbox("使用模型指定的偏移值", ref config.UseModelOffsets)) {
                     Plugin.RequestUpdateAll();
                 }
 
                 ImGui.SameLine();
-                ImGuiComponents.HelpMarker("Allows mod developers to assign an offset to a modded item.\nClick this for more information.");
+                ImGuiComponents.HelpMarker("允许模组作者为修改后的物品指定偏移值。\n单击获取更多信息。");
                 if (ImGui.IsItemClicked()) {
                     Util.OpenLink("https://github.com/Caraxi/SimpleHeels/blob/master/modguide.md");
                 }
 
-                ImGui.Checkbox("Apply offsets to minions", ref config.ApplyToMinions);
+                ImGui.Checkbox("将偏移应用于宠物", ref config.ApplyToMinions);
                 ImGui.SameLine();
-                ImGuiComponents.HelpMarker("Allows group offsets to be applied to minions.\nThis only functions if the minion has been converted to a human using another plugin such as Glamourer.\nEmote offsets and syncing will not function on minions.");
+                ImGuiComponents.HelpMarker("允许将组分配的偏移应用于宠物。\n这只有在使用另一个插件（如Glamourer）将宠物转换为人类后才生效。\n情感动作偏移和月海同步不会对宠物起作用。");
 
-                ImGui.Checkbox("Share static minion positions", ref config.ApplyStaticMinionPositions);
+                ImGui.Checkbox("同步静态宠物位置", ref config.ApplyStaticMinionPositions);
                 ImGui.SameLine();
-                ImGuiComponents.HelpMarker("Allows the sending and recieving of static minion positions when syncing your offset with Mare.\nThis option must be enabled on both sides to have an effect on position.\nOnly works on minions that do not move, such as the Plush Cushion and Wanderers Campfire");
+                ImGuiComponents.HelpMarker("当你正在通过月海同步器同步你的偏移值时，允许发送和接收静态宠物的位置。\n他人也须启用了此选项才能看到效果。\n仅适用于不会移动的宠物，比如软软垫子和浪人的篝火。");
 
                 
-                ImGui.Checkbox("Use precise positioning for emotes", ref config.UsePrecisePositioning);
+                ImGui.Checkbox("情感动作使用精确定位", ref config.UsePrecisePositioning);
                 ImGui.SameLine();
-                ImGuiComponents.HelpMarker("Adjusts offsets of other players to better match the position they see themself in.\n\nBy default, the game does not have a good deal of precision in showing where other players are, this option helps line up emotes that aren't bound to a chair or bed.");
+                ImGuiComponents.HelpMarker("调整其他玩家的偏移，以更好地匹配他们在游戏中实际看到的位置。\n\n默认情况下，游戏在显示其他玩家所在位置时缺乏精确度，此选项可帮助对齐未绑定在椅子或床上的其他情感动作。");
                 
-                ImGui.Checkbox("Prefer model paths when creating new entries", ref config.PreferModelPath);
+                ImGui.Checkbox("创建新条目时优先显示模型路径", ref config.PreferModelPath);
 
-                ImGui.Checkbox("Show Plus/Minus buttons for offset adjustments", ref config.ShowPlusMinusButtons);
+                ImGui.Checkbox("显示加号/减号按钮来调整偏移值", ref config.ShowPlusMinusButtons);
                 using (ImRaii.Disabled(!config.ShowPlusMinusButtons))
                 using (ImRaii.PushIndent()) {
                     ImGui.SetNextItemWidth(200 * ImGuiHelpers.GlobalScale);
-                    ImGui.SliderFloat("Plus/Minus Button Delta", ref config.PlusMinusDelta, 0.0001f, 0.01f, "%.4f", ImGuiSliderFlags.AlwaysClamp);
+                    ImGui.SliderFloat("加号/减号按钮调整值", ref config.PlusMinusDelta, 0.0001f, 0.01f, "%.4f", ImGuiSliderFlags.AlwaysClamp);
                 }
 
-                ImGui.Checkbox("Show character Rename and Copy UI", ref config.ShowCopyUi);
+                ImGui.Checkbox("显示角色重命名和复制UI", ref config.ShowCopyUi);
 
                 ImGuiExt.Separator();
-                ImGui.Text("Bypass Dalamud's plugin UI hiding:");
+                ImGui.Text("绕过卫月框架的插件UI隐藏机制：");
                 ImGui.Indent();
-                if (ImGui.Checkbox("In GPose", ref config.ConfigInGpose)) {
+                if (ImGui.Checkbox("进入集体动作时", ref config.ConfigInGpose)) {
                     PluginService.PluginInterface.UiBuilder.DisableGposeUiHide = config.ConfigInGpose;
                 }
 
-                if (ImGui.Checkbox("In Cutscene", ref config.ConfigInCutscene)) {
+                if (ImGui.Checkbox("进入过场动画时", ref config.ConfigInCutscene)) {
                     PluginService.PluginInterface.UiBuilder.DisableCutsceneUiHide = config.ConfigInCutscene;
                 }
 
                 ImGui.Unindent();
                 ImGuiExt.Separator();
-                ImGui.Text("Temporary Offsets");
+                ImGui.Text("临时偏移");
                 ImGui.SameLine();
                 using (ImRaii.PushFont(UiBuilder.IconFont)) {
                     ImGui.TextColored(ImGuiColors.DalamudWhite, FontAwesomeIcon.InfoCircle.ToIconString());
@@ -682,37 +682,37 @@ public class ConfigWindow : Window {
                     
                     ImGui.BeginTooltip();
                     
-                    ImGui.TextWrapped("Temporary Offsets allow adjusting your current offset without permanently changing the config. Offsets will automatically be reset when you begin or end a looped emote, or if manually reset with the 'Reset Offset' button.");
+                    ImGui.TextWrapped("临时偏移允许您在不更改配置的情况下调整当前偏移。当您开始、结束一个循环的情感动作时，或者使用“重置偏移”按钮手动重置时，偏移将自动重置。");
                     ImGuiHelpers.ScaledDummy(350, 1);
                     ImGui.EndTooltip();
                 }
                 
                 using (ImRaii.PushIndent())
                 using (ImRaii.PushId("TempOffsets")) {
-                    ImGui.Checkbox("Show Editing Window", ref config.TempOffsetWindowOpen);
+                    ImGui.Checkbox("显示编辑窗口", ref config.TempOffsetWindowOpen);
                     ImGui.SameLine();
-                    ImGui.TextDisabled("Toggle with command");
+                    ImGui.TextDisabled("使用命令切换");
                     ImGui.SameLine();
                     ImGui.TextColored(ImGuiColors.DalamudViolet, "/heels temp");
-                    ImGui.Checkbox("Show Tooltips", ref config.TempOffsetWindowTooltips);
-                    ImGui.Checkbox("Lock Window", ref config.TempOffsetWindowLock);
+                    ImGui.Checkbox("显示提示", ref config.TempOffsetWindowTooltips);
+                    ImGui.Checkbox("窗口锁定", ref config.TempOffsetWindowLock);
                     using (ImRaii.Disabled(config.TempOffsetWindowLock == false)) {
-                        ImGui.Checkbox("Transparent", ref config.TempOffsetWindowTransparent);
+                        ImGui.Checkbox("窗口透明", ref config.TempOffsetWindowTransparent);
                     }
 
-                    ImGui.Checkbox("Show Plus/Minus Buttons", ref config.TempOffsetWindowPlusMinus);
+                    ImGui.Checkbox("显示加号/减号按钮", ref config.TempOffsetWindowPlusMinus);
                 }
                 
                 
                 ImGuiExt.Separator();
 
 #if DEBUG
-                ImGui.Checkbox("[DEBUG] Open config window on startup", ref config.DebugOpenOnStartup);
+                ImGui.Checkbox("[调试] 在启动时打开设置窗口", ref config.DebugOpenOnStartup);
 #endif
 
                 if (Plugin.IsDebug) {
-                    if (ImGui.TreeNode("DEBUG")) {
-                        ImGui.Text("Last Reported Data:");
+                    if (ImGui.TreeNode("调试")) {
+                        ImGui.Text("上次报告的数据：");
                         ImGui.Indent();
                         ImGui.Text(ApiProvider.LastReportedData);
                         ImGui.Unindent();
@@ -726,7 +726,7 @@ public class ConfigWindow : Window {
                     }
                 }
 
-                if (config.UseModelOffsets && ImGui.CollapsingHeader("Model Offset Editor")) {
+                if (config.UseModelOffsets && ImGui.CollapsingHeader("模型偏移编辑器")) {
                     ShowModelEditor();
                 }
             }
@@ -739,11 +739,11 @@ public class ConfigWindow : Window {
         if (mdlEditorException != null) {
             ImGui.TextColored(ImGuiColors.DalamudRed, $"{mdlEditorException}");
         } else {
-            ImGui.TextWrapped("This is a very simple editor that allows setting the offset for a mdl file.");
+            ImGui.TextWrapped("这是一个非常简单的修改器，可以通过修改mdl文件来设置偏移值。");
             ImGui.Spacing();
-            ImGui.Text("- Select a file");
-            ImGui.Text("- Set Offset");
-            ImGui.Text("- Save the modified file");
+            ImGui.Text("- 选择文件");
+            ImGui.Text("- 设置偏移");
+            ImGui.Text("- 保存修改后的文件");
             ImGui.Spacing();
 
             if (loadedFile != null) {
@@ -752,28 +752,28 @@ public class ConfigWindow : Window {
                 ImGui.InputText("##loadedFile", ref loadedFilePath, 2048, ImGuiInputTextFlags.ReadOnly);
                 var s = ImGui.GetItemRectSize();
                 ImGui.SameLine();
-                ImGui.Text("Loaded File");
-                ImGui.Checkbox("Use TexTools safe attribute", ref useTextoolSafeAttribute);
+                ImGui.Text("加载的文件");
+                ImGui.Checkbox("使用TexTools安全属性", ref useTextoolSafeAttribute);
 
-                ImGuiExt.FloatEditor("Heels Offset", ref mdlEditorOffset, 0.001f, -1, 1, "%.5f", ImGuiSliderFlags.AlwaysClamp);
+                ImGuiExt.FloatEditor("高跟鞋偏移", ref mdlEditorOffset, 0.001f, -1, 1, "%.5f", ImGuiSliderFlags.AlwaysClamp);
                 var offset = attributes.FirstOrDefault(a => a.Length > 13 && a.StartsWith("heels_offset") && a[12] is '_' or '=');
                 if (offset == null) {
-                    ImGui.Text("Model has no offset assigned.");
+                    ImGui.Text("模型未指定偏移值。");
                 } else if (offset[12] == '_') {
                     var str = offset[13..].Replace("n_", "-").Replace('a', '0').Replace('b', '1').Replace('c', '2').Replace('d', '3').Replace('e', '4').Replace('f', '5').Replace('g', '6').Replace('h', '7').Replace('i', '8').Replace('j', '9').Replace('_', '.');
-                    ImGui.Text($"Current Offset: {str}");
+                    ImGui.Text($"当前偏移：{str}");
                 } else {
-                    ImGui.Text($"Current Offset: {offset[13..]}");
+                    ImGui.Text($"当前偏移值为：{offset[13..]}");
                 }
 
-                if (ImGui.Button("Save MDL File")) {
+                if (ImGui.Button("保存MDL文件")) {
                     if (_fileDialogManager == null) {
                         _fileDialogManager = new FileDialogManager();
                         PluginService.PluginInterface.UiBuilder.Draw += _fileDialogManager.Draw;
                     }
 
                     try {
-                        _fileDialogManager.SaveFileDialog("Save MDL File...", "MDL File{.mdl}", "output.mdl", ".mdl", (b, files) => {
+                        _fileDialogManager.SaveFileDialog("保存MDL文件...", "MDL File{.mdl}", "output.mdl", ".mdl", (b, files) => {
                             attributes.RemoveAll(a => a.StartsWith("heels_offset"));
                             if (useTextoolSafeAttribute) {
                                 var valueStr = mdlEditorOffset.ToString(CultureInfo.InvariantCulture).Replace("-", "n_").Replace(".", "_").Replace("0", "a").Replace("1", "b").Replace("2", "c").Replace("3", "d").Replace("4", "e").Replace("5", "f").Replace("6", "g").Replace("7", "h").Replace("8", "i").Replace("9", "j");
@@ -793,18 +793,18 @@ public class ConfigWindow : Window {
                     }
                 }
 
-                if (ImGui.Button("Cancel")) {
+                if (ImGui.Button("取消")) {
                     loadedFile = null;
                 }
             } else {
-                if (ImGui.Button("Select MDL File")) {
+                if (ImGui.Button("选择MDL文件")) {
                     if (_fileDialogManager == null) {
                         _fileDialogManager = new FileDialogManager();
                         PluginService.PluginInterface.UiBuilder.Draw += _fileDialogManager.Draw;
                     }
 
                     try {
-                        _fileDialogManager.OpenFileDialog("Select MDL File...", "MDL File{.mdl}", (b, files) => {
+                        _fileDialogManager.OpenFileDialog("选择MDL文件...", "MDL File{.mdl}", (b, files) => {
                             if (files.Count != 1) return;
                             loadedFilePath = files[0];
                             PluginService.Log.Info($"Loading MDL: {loadedFilePath}");
@@ -858,9 +858,9 @@ public class ConfigWindow : Window {
                 activeCharacterAsCharacter = (Character*)activeCharacter;
                 activeHeelConfig = characterConfig.GetFirstMatch(activeCharacterAsCharacter);
                 if (target is PlayerCharacter pc) {
-                    ImGui.TextDisabled($"Preview displays based on {target.Name.TextValue} ({pc.HomeWorld?.GameData?.Name.RawString})");
+                    ImGui.TextDisabled($"预览显示基于 {target.Name.TextValue} ({pc.HomeWorld?.GameData?.Name.RawString})");
                 } else {
-                    ImGui.TextDisabled($"Preview displays based on {target.Name.TextValue} (NPC)");
+                    ImGui.TextDisabled($"预览显示基于 {target.Name.TextValue} (NPC)");
                 }
 
                 Plugin.RequestUpdateAll();
@@ -880,10 +880,10 @@ public class ConfigWindow : Window {
         }
 
         if (characterConfig is IpcCharacterConfig) {
-            ImGui.TextColored(ImGuiColors.DalamudYellow, "This character's config has been assigned by another plugin.");
+            ImGui.TextColored(ImGuiColors.DalamudYellow, "此角色的配置已由另一个插件分配。");
             if (Plugin.IsDebug && activeCharacter != null) {
                 ImGui.SameLine();
-                if (ImGui.SmallButton("Clear IPC")) {
+                if (ImGui.SmallButton("清除IPC")) {
                     Plugin.IpcAssignedData.Remove(activeCharacter->ObjectID);
                     selectedCharacter = null;
                     selectedWorld = 0;
@@ -894,9 +894,9 @@ public class ConfigWindow : Window {
         }
 
         if (characterConfig is not IpcCharacterConfig && config.ShowCopyUi && newWorld != 0) {
-            ImGui.InputText("Character Name", ref newName, 64);
+            ImGui.InputText("角色名称", ref newName, 64);
             var worldName = PluginService.Data.GetExcelSheet<World>()!.GetRow(newWorld)!.Name.ToDalamudString().TextValue;
-            if (ImGui.BeginCombo("World", worldName)) {
+            if (ImGui.BeginCombo("世界", worldName)) {
                 foreach (var world in PluginService.Data.GetExcelSheet<World>()!.Where(w => w.IsPublic).OrderBy(w => w.Name.ToDalamudString().TextValue, StringComparer.OrdinalIgnoreCase)) {
                     if (ImGui.Selectable($"{world.Name.ToDalamudString().TextValue}", world.RowId == newWorld)) {
                         newWorld = world.RowId;
@@ -907,8 +907,8 @@ public class ConfigWindow : Window {
             }
 
             using (ImRaii.Disabled(!ImGui.GetIO().KeyShift)) {
-                if (ImGui.Button("Create Group") && selectedCharacter != null) {
-                    if (new GroupConfig { Label = $"Group from {selectedName}@{worldName}", HeelsConfig = selectedCharacter.HeelsConfig, EmoteConfigs = selectedCharacter.EmoteConfigs, Enabled = false }.Initialize() is GroupConfig group) {
+                if (ImGui.Button("创建组") && selectedCharacter != null) {
+                    if (new GroupConfig { Label = $"组来自[{selectedName}@{worldName}]", HeelsConfig = selectedCharacter.HeelsConfig, EmoteConfigs = selectedCharacter.EmoteConfigs, Enabled = false }.Initialize() is GroupConfig group) {
                         var copy = JsonConvert.DeserializeObject<GroupConfig>(JsonConvert.SerializeObject(group));
                         if (copy != null) {
                             config.Groups.Add(copy);
@@ -922,7 +922,7 @@ public class ConfigWindow : Window {
             }
 
             if (!ImGui.GetIO().KeyShift && ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled)) {
-                ImGui.SetTooltip("Hold SHIFT\n\nCreates a new Group Assignment from this character's config.");
+                ImGui.SetTooltip("按住SHIFT键\n\n从该角色的配置中创建新的组分配。");
             }
 
             ImGui.SameLine();
@@ -931,7 +931,7 @@ public class ConfigWindow : Window {
                 var newAlreadyExists = config.WorldCharacterDictionary.ContainsKey(newWorld) && config.WorldCharacterDictionary[newWorld].ContainsKey(newName);
 
                 using (ImRaii.Disabled(isModified == false || newAlreadyExists)) {
-                    if (ImGui.Button("Rename Character Config")) {
+                    if (ImGui.Button("重命名角色配置")) {
                         if (selectedCharacter != null && config.TryAddCharacter(newName, newWorld)) {
                             config.WorldCharacterDictionary[newWorld][newName] = selectedCharacter;
                             config.WorldCharacterDictionary[selectedWorld].Remove(selectedName);
@@ -949,7 +949,7 @@ public class ConfigWindow : Window {
 
                 ImGui.SameLine();
                 using (ImRaii.Disabled(isModified == false || newAlreadyExists)) {
-                    if (ImGui.Button("Copy Character Config")) {
+                    if (ImGui.Button("复制角色配置")) {
                         if (config.TryAddCharacter(newName, newWorld)) {
                             var j = JsonConvert.SerializeObject(selectedCharacter);
                             config.WorldCharacterDictionary[newWorld][newName] = (JsonConvert.DeserializeObject<CharacterConfig>(j) ?? new CharacterConfig()).Initialize();
@@ -959,18 +959,18 @@ public class ConfigWindow : Window {
 
                 if (ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled) || moveHovered) {
                     using (ImRaii.Tooltip()) {
-                        ImGui.Text(moveHovered ? "Change which character this character configuration is assigned to." : "Copy this character config to another character.");
+                        ImGui.Text(moveHovered ? "更改此配置分配的角色。" : "将此配置复制给另一个角色。");
                         if (!isModified) {
-                            ImGui.TextColored(ImGuiColors.DalamudYellow, "Change the name or world in the boxes above.");
+                            ImGui.TextColored(ImGuiColors.DalamudYellow, "更改上面选框/输入框中的角色名称或世界名称。");
                         } else if (newAlreadyExists) {
-                            ImGui.TextColored(ImGuiColors.DalamudOrange, "The new character already has a configuration.");
+                            ImGui.TextColored(ImGuiColors.DalamudOrange, "新角色已拥有配置。");
                         }
                     }
                 }
 
                 if (isModified && newAlreadyExists) {
                     ImGui.SameLine();
-                    ImGui.TextDisabled("Character already exists in config.");
+                    ImGui.TextDisabled("配置中已存在此角色。");
                 }
             }
 
@@ -984,7 +984,7 @@ public class ConfigWindow : Window {
             ImGui.Text(FontAwesomeIcon.ExclamationTriangle.ToIconString());
             ImGui.PopFont();
             ImGui.SameLine();
-            ImGui.TextWrapped("All heel config options are currently disabled on this character. Click the check box under the 'Enable' heading to enable an entry to begin applying heels offsets.");
+            ImGui.TextWrapped("此角色下的所有偏移项当前都处于禁用状态。单击“启用”标题下的复选框开始使用高跟鞋偏移。");
             ImGui.PopStyleColor();
             ImGui.EndGroup();
 
@@ -996,18 +996,18 @@ public class ConfigWindow : Window {
         }
 
         using (ImRaii.Disabled(characterConfig is IpcCharacterConfig)) {
-            if (characterConfig is not (IpcCharacterConfig or GroupConfig) && ImGui.Checkbox($"Enable offsets for {selectedName}", ref characterConfig.Enabled)) {
+            if (characterConfig is not (IpcCharacterConfig or GroupConfig) && ImGui.Checkbox($"为[{selectedName}]启用偏移。", ref characterConfig.Enabled)) {
                 Plugin.RequestUpdateAll();
             }
 
             if (selectedCharacter is { Enabled: false }) {
                 ImGui.SameLine();
-                ImGui.TextColored(ImGuiColors.DalamudRed, "This config is disabled.");
+                ImGui.TextColored(ImGuiColors.DalamudRed, "此配置已禁用。");
             }
 
             ImGuiExt.Separator();
 
-            if (characterConfig is not IpcCharacterConfig && ImGui.CollapsingHeader("Equipment Offsets", ImGuiTreeNodeFlags.DefaultOpen)) {
+            if (characterConfig is not IpcCharacterConfig && ImGui.CollapsingHeader("装备偏移", ImGuiTreeNodeFlags.DefaultOpen)) {
                 var activeFootwear = GetModelIdForPlayer(activeCharacter, ModelSlot.Feet);
                 var activeFootwearPath = GetModelPathForPlayer(activeCharacter, ModelSlot.Feet);
 
@@ -1019,10 +1019,10 @@ public class ConfigWindow : Window {
 
                 var windowMax = ImGui.GetWindowPos() + ImGui.GetWindowSize();
                 if (ImGui.BeginTable("OffsetsTable", 5)) {
-                    ImGui.TableSetupColumn("Enable", ImGuiTableColumnFlags.WidthFixed, checkboxSize * 4 + 3 * ImGuiHelpers.GlobalScale);
-                    ImGui.TableSetupColumn("Label", ImGuiTableColumnFlags.WidthFixed, 120 * ImGuiHelpers.GlobalScale);
-                    ImGui.TableSetupColumn("Offset", ImGuiTableColumnFlags.WidthFixed, (90 + (config.ShowPlusMinusButtons ? 50 : 0)) * ImGuiHelpers.GlobalScale);
-                    ImGui.TableSetupColumn("Clothing", ImGuiTableColumnFlags.WidthStretch);
+                    ImGui.TableSetupColumn("启用", ImGuiTableColumnFlags.WidthFixed, checkboxSize * 4 + 3 * ImGuiHelpers.GlobalScale);
+                    ImGui.TableSetupColumn("标签", ImGuiTableColumnFlags.WidthFixed, 120 * ImGuiHelpers.GlobalScale);
+                    ImGui.TableSetupColumn("偏移", ImGuiTableColumnFlags.WidthFixed, (90 + (config.ShowPlusMinusButtons ? 50 : 0)) * ImGuiHelpers.GlobalScale);
+                    ImGui.TableSetupColumn("服装", ImGuiTableColumnFlags.WidthStretch);
                     ImGui.TableSetupColumn("", ImGuiTableColumnFlags.WidthFixed, checkboxSize);
 
                     TableHeaderRow(TableHeaderAlign.Right, TableHeaderAlign.Center, TableHeaderAlign.Center, TableHeaderAlign.Left);
@@ -1046,11 +1046,11 @@ public class ConfigWindow : Window {
                         if (ImGui.IsItemHovered()) {
                             ImGui.PopFont();
                             if (heelConfig.Locked && ImGui.GetIO().KeyShift) {
-                                ImGui.SetTooltip("Unlock Entry");
+                                ImGui.SetTooltip("解锁");
                             } else if (heelConfig.Locked) {
-                                ImGui.SetTooltip("Hold SHIFT to unlock");
+                                ImGui.SetTooltip("按住SHIFT键点击解锁");
                             } else {
-                                ImGui.SetTooltip("Lock Entry");
+                                ImGui.SetTooltip("锁定");
                             }
 
                             ImGui.PushFont(UiBuilder.IconFont);
@@ -1071,7 +1071,7 @@ public class ConfigWindow : Window {
 
                         if (ImGui.IsItemHovered() && !ImGui.GetIO().KeyShift) {
                             ImGui.PopFont();
-                            ImGui.SetTooltip("Hold SHIFT to delete.");
+                            ImGui.SetTooltip("按住SHIFT键点击删除。");
                             ImGui.PushFont(UiBuilder.IconFont);
                         }
 
@@ -1105,15 +1105,15 @@ public class ConfigWindow : Window {
                             ImGui.BeginTooltip();
 
                             if (heelConfig.Enabled) {
-                                ImGui.Text("Click to disable heel config entry.");
+                                ImGui.Text("单击禁用此偏移。");
                             } else {
-                                ImGui.Text("Click to enable heel config entry.");
+                                ImGui.Text("单击启用此偏移。");
                                 var match = characterConfig.GetDuplicates(heelConfig, true).FirstOrDefault();
                                 if (match != null) {
                                     if (!string.IsNullOrWhiteSpace(match.Label)) {
-                                        ImGui.TextDisabled($"'{match.Label}' will be disabled as it affects the same items.");
+                                        ImGui.TextDisabled($"'{match.Label}' 将被禁用，因为使用了相同物品。");
                                     } else {
-                                        ImGui.TextDisabled($"An entry affecting the same items will be disabled.");
+                                        ImGui.TextDisabled($"影响相同物品的偏移项将被禁用。");
                                     }
                                 }
                             }
@@ -1151,21 +1151,21 @@ public class ConfigWindow : Window {
                         if (ImGui.BeginCombo("##footwear", pathMode ? pathDisplay : GetModelName(heelConfig.ModelId, heelConfig.Slot), ImGuiComboFlags.HeightLargest)) {
                             if (ImGui.BeginTabBar("##footwear_tabs")) {
                                 if (pathMode) {
-                                    if (ImGui.TabItemButton("Model ID")) {
+                                    if (ImGui.TabItemButton("模型ID")) {
                                         heelConfig.PathMode = false;
                                         (heelConfig.Slot, heelConfig.RevertSlot) = (heelConfig.RevertSlot, heelConfig.Slot);
                                     }
                                 }
 
-                                if (ImGui.BeginTabItem((pathMode ? "Model Path" : "Model ID") + "###currentConfigType")) {
+                                if (ImGui.BeginTabItem((pathMode ? "模型路径" : "模型ID") + "###currentConfigType")) {
                                     if (pathMode) {
                                         heelConfig.Path ??= string.Empty;
-                                        ImGui.TextWrapped("Assign offset based on the file path of the model, this can be a game path or a penumbra mod path.");
-                                        ImGui.TextDisabled("File Path:");
+                                        ImGui.TextWrapped("根据模型的文件路径分配偏移值，可以是游戏路径或半影(Penumbra)的模型路径。");
+                                        ImGui.TextDisabled("文件路径：");
                                         ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X);
                                         ImGui.InputText("##pathInput", ref heelConfig.Path, 1024);
 
-                                        ImGui.TextDisabled("Equip Slot:");
+                                        ImGui.TextDisabled("装备槽：");
                                         ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X);
                                         if (ImGui.BeginCombo("##slotInput", $"{heelConfig.Slot}")) {
                                             if (ImGui.Selectable($"{ModelSlot.Top}", heelConfig.Slot == ModelSlot.Top)) heelConfig.Slot = ModelSlot.Top;
@@ -1181,7 +1181,7 @@ public class ConfigWindow : Window {
                                         };
 
                                         if (activeSlotPath != null) {
-                                            if (ImGui.Button("Current Model Path")) {
+                                            if (ImGui.Button("当前模型路径")) {
                                                 heelConfig.Path = activeSlotPath;
                                             }
 
@@ -1196,7 +1196,7 @@ public class ConfigWindow : Window {
                                             ImGui.SetKeyboardFocusHere();
                                         }
 
-                                        ImGui.InputTextWithHint("##footwearSearch", "Search...", ref footwearSearch, 100);
+                                        ImGui.InputTextWithHint("##footwearSearch", "搜索...", ref footwearSearch, 100);
 
                                         if (ImGui.BeginChild("##footwearSelectScroll", new Vector2(-1, 200))) {
                                             foreach (var shoeModel in shoeModelList.Value.Values) {
@@ -1225,7 +1225,7 @@ public class ConfigWindow : Window {
                                 }
 
                                 if (!pathMode) {
-                                    if (ImGui.TabItemButton("Model Path")) {
+                                    if (ImGui.TabItemButton("模型路径")) {
                                         heelConfig.PathMode = true;
                                         (heelConfig.Slot, heelConfig.RevertSlot) = (heelConfig.RevertSlot, heelConfig.Slot);
                                     }
@@ -1241,7 +1241,7 @@ public class ConfigWindow : Window {
                         ImGui.EndDisabled();
 
                         if ((heelConfig.Slot == ModelSlot.Feet && ((heelConfig.PathMode == false && activeFootwear == heelConfig.ModelId) || (heelConfig.PathMode && activeFootwearPath != null && activeFootwearPath.Equals(heelConfig.Path, StringComparison.OrdinalIgnoreCase)))) || (heelConfig.Slot == ModelSlot.Legs && ((heelConfig.PathMode == false && activeLegs == heelConfig.ModelId) || (heelConfig.PathMode && activeLegsPath != null && activeLegsPath.Equals(heelConfig.Path, StringComparison.OrdinalIgnoreCase)))) || (heelConfig.Slot == ModelSlot.Top && ((heelConfig.PathMode == false && activeTop == heelConfig.ModelId) || (heelConfig.PathMode && activeTopPath != null && activeTopPath.Equals(heelConfig.Path, StringComparison.OrdinalIgnoreCase))))) {
-                            ShowActiveOffsetMarker(activeCharacterAsCharacter != null, heelConfig.Enabled, activeHeelConfig == heelConfig, "Currently Wearing");
+                            ShowActiveOffsetMarker(activeCharacterAsCharacter != null, heelConfig.Enabled, activeHeelConfig == heelConfig, "当前装备");
                             if (heelConfig.Enabled) {
                                 wearingMatchCount++;
                                 usingDefault = false;
@@ -1264,16 +1264,16 @@ public class ConfigWindow : Window {
                         ImGui.Text(FontAwesomeIcon.InfoCircle.ToIconString());
                         ImGui.PopFont();
                         ImGui.SameLine();
-                        ImGui.TextWrapped("You are wearing items that match multiple enabled config entries.");
+                        ImGui.TextWrapped("你佩戴的装备匹配到多个已启用的偏移项。");
                         ImGui.PopStyleColor();
                         ImGui.EndGroup();
                         if (ImGui.IsItemHovered()) {
                             ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);
                             ImGui.BeginTooltip();
-                            ImGui.Text("Offsets will be applied to: ");
-                            ImGui.Text(" - The first enabled '[Top]' option you are wearing.");
-                            ImGui.Text(" - Then the first enabled '[Legs]' option you are wearing.");
-                            ImGui.Text(" - Finally the first enabled feet option you are wearing.");
+                            ImGui.Text("偏移值将按以下优先级生效：");
+                            ImGui.Text(" - 首先启用你佩戴的'[身体装备]'偏移值。");
+                            ImGui.Text(" - 然后启用你佩戴的'[腿部装备]'偏移值。");
+                            ImGui.Text(" - 最后启用你佩戴的'[脚部装备]'偏移值。");
                             ImGui.EndTooltip();
                         }
                     }
@@ -1296,7 +1296,7 @@ public class ConfigWindow : Window {
 
                     bool ShowAddButton(ushort id, ModelSlot slot) {
                         if (shoeModelList.Value.ContainsKey((id, slot))) {
-                            if (ImGui.Button($"Add an Entry for {GetModelName(id, slot)}")) {
+                            if (ImGui.Button($"为[{GetModelName(id, slot)}]添加一条偏移设置")) {
                                 characterConfig.HeelsConfig.Add(new HeelConfig() { ModelId = id, Slot = slot, Enabled = !characterConfig.HeelsConfig.Any(h => h is { PathMode: false } && h.ModelId == id) });
                             }
 
@@ -1316,7 +1316,7 @@ public class ConfigWindow : Window {
                             pathDisplay = (slot != ModelSlot.Feet ? $"[{slot}] " : "") + pathDisplay;
                         }
 
-                        if (ImGui.Button($"Add Path: {pathDisplay}")) {
+                        if (ImGui.Button($"添加路径：{pathDisplay}")) {
                             characterConfig.HeelsConfig.Add(new HeelConfig() { PathMode = true, Path = path, Slot = slot, Enabled = !characterConfig.HeelsConfig.Any(h => h is { PathMode: true } && h.Path == path) });
                         }
 
@@ -1330,7 +1330,7 @@ public class ConfigWindow : Window {
                             ShowAddPathButton(ImGui.GetIO().KeyCtrl ? activeLegsPath : ImGui.GetIO().KeyAlt ? activeTopPath : activeFootwearPath, ImGui.GetIO().KeyCtrl ? ModelSlot.Legs : ImGui.GetIO().KeyAlt ? ModelSlot.Top : ModelSlot.Feet);
                         } else {
                             if (!(ShowAddButton(activeTop, ModelSlot.Top) || ShowAddButton(activeLegs, ModelSlot.Legs) || ShowAddButton(activeFootwear, ModelSlot.Feet))) {
-                                if (ImGui.Button($"Add New Entry")) {
+                                if (ImGui.Button($"添加一条新的偏移设置")) {
                                     characterConfig.HeelsConfig.Add(new HeelConfig() { ModelId = 0, Slot = ModelSlot.Feet, Enabled = !characterConfig.HeelsConfig.Any(h => h is { PathMode: false, ModelId: 0 }) });
                                 }
                             }
@@ -1346,23 +1346,23 @@ public class ConfigWindow : Window {
             var emoteOffsetsOpen = true;
 
             if (characterConfig is IpcCharacterConfig) {
-                ImGui.CollapsingHeader("Emote Offsets##ipcCharacterConfig", ImGuiTreeNodeFlags.DefaultOpen | ImGuiTreeNodeFlags.Leaf);
+                ImGui.CollapsingHeader("情感动作偏移##ipcCharacterConfig", ImGuiTreeNodeFlags.DefaultOpen | ImGuiTreeNodeFlags.Leaf);
             } else {
-                emoteOffsetsOpen = ImGui.CollapsingHeader("Emote Offsets", ImGuiTreeNodeFlags.DefaultOpen);
+                emoteOffsetsOpen = ImGui.CollapsingHeader("情感动作偏移", ImGuiTreeNodeFlags.DefaultOpen);
             }
 
             if (emoteOffsetsOpen && characterConfig.EmoteConfigs != null) {
                 if (ImGui.BeginTable("emoteOffsets", characterConfig is IpcCharacterConfig ? 6 : 8, ImGuiTableFlags.NoClip)) {
                     if (characterConfig is not IpcCharacterConfig) {
-                        ImGui.TableSetupColumn("Enable", ImGuiTableColumnFlags.WidthFixed, checkboxSize * 4 + 3 * ImGuiHelpers.GlobalScale);
-                        ImGui.TableSetupColumn("Label", ImGuiTableColumnFlags.WidthFixed, 120 * ImGuiHelpers.GlobalScale);
+                        ImGui.TableSetupColumn("启用", ImGuiTableColumnFlags.WidthFixed, checkboxSize * 4 + 3 * ImGuiHelpers.GlobalScale);
+                        ImGui.TableSetupColumn("标签", ImGuiTableColumnFlags.WidthFixed, 120 * ImGuiHelpers.GlobalScale);
                     }
 
-                    ImGui.TableSetupColumn("Emote", ImGuiTableColumnFlags.WidthStretch);
-                    ImGui.TableSetupColumn("Offset Height", ImGuiTableColumnFlags.WidthFixed, (90 + (config.ShowPlusMinusButtons ? 50 : 0)) * ImGuiHelpers.GlobalScale);
-                    ImGui.TableSetupColumn("Offset Forward", ImGuiTableColumnFlags.WidthFixed, (90 + (config.ShowPlusMinusButtons ? 50 : 0)) * ImGuiHelpers.GlobalScale);
-                    ImGui.TableSetupColumn("Offset Side", ImGuiTableColumnFlags.WidthFixed, (90 + (config.ShowPlusMinusButtons ? 50 : 0)) * ImGuiHelpers.GlobalScale);
-                    ImGui.TableSetupColumn("Rotation", ImGuiTableColumnFlags.WidthFixed, (90 + (config.ShowPlusMinusButtons ? 50 : 0)) * ImGuiHelpers.GlobalScale);
+                    ImGui.TableSetupColumn("情感动作", ImGuiTableColumnFlags.WidthStretch);
+                    ImGui.TableSetupColumn("高度偏移", ImGuiTableColumnFlags.WidthFixed, (90 + (config.ShowPlusMinusButtons ? 50 : 0)) * ImGuiHelpers.GlobalScale);
+                    ImGui.TableSetupColumn("前后偏移", ImGuiTableColumnFlags.WidthFixed, (90 + (config.ShowPlusMinusButtons ? 50 : 0)) * ImGuiHelpers.GlobalScale);
+                    ImGui.TableSetupColumn("左右偏移", ImGuiTableColumnFlags.WidthFixed, (90 + (config.ShowPlusMinusButtons ? 50 : 0)) * ImGuiHelpers.GlobalScale);
+                    ImGui.TableSetupColumn("    旋转", ImGuiTableColumnFlags.WidthFixed, (50 + (config.ShowPlusMinusButtons ? 50 : 0)) * ImGuiHelpers.GlobalScale);
                     ImGui.TableSetupColumn("", ImGuiTableColumnFlags.WidthFixed, checkboxSize);
 
                     if (characterConfig is IpcCharacterConfig) {
@@ -1397,7 +1397,7 @@ public class ConfigWindow : Window {
                                 }
 
                                 if (e.Locked == false && !ImGui.GetIO().KeyShift && ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled)) {
-                                    ImGui.SetTooltip("Hold SHIFT to delete");
+                                    ImGui.SetTooltip("按住SHIFT键点击删除。");
                                 }
 
                                 ImGui.SameLine();
@@ -1446,7 +1446,7 @@ public class ConfigWindow : Window {
 
                         var activeEmote = EmoteIdentifier.Get(activeCharacterAsCharacter);
                         
-                        ShowActiveOffsetMarker(activeCharacterAsCharacter != null && activeEmote != null &&(activeEmote == e.Emote || (characterConfig is not IpcCharacterConfig && e.Editing == false && e.LinkedEmotes.Contains(activeEmote))), e.Enabled, activeHeelConfig == e, "Emote is currently being performed");
+                        ShowActiveOffsetMarker(activeCharacterAsCharacter != null && activeEmote != null &&(activeEmote == e.Emote || (characterConfig is not IpcCharacterConfig && e.Editing == false && e.LinkedEmotes.Contains(activeEmote))), e.Enabled, activeHeelConfig == e, "当前正在执行情感动作。");
 
                         if (characterConfig is IpcCharacterConfig || e.Editing) {
                             var fl = characterConfig is not IpcCharacterConfig;
@@ -1467,14 +1467,14 @@ public class ConfigWindow : Window {
                                         ImGui.Dummy(new Vector2(paddingSize, 1));
                                         ImGui.SameLine();
 
-                                        if (ImGuiExt.IconButton(FontAwesomeIcon.Unlink, null, ImGui.GetIO().KeyShift, "Unlink Emote", "Hold SHIFT")) {
+                                        if (ImGuiExt.IconButton(FontAwesomeIcon.Unlink, null, ImGui.GetIO().KeyShift, "取消链接情感动作", "按住SHIFT")) {
                                             e.LinkedEmotes.Remove(linked);
                                             characterConfig.EmoteConfigs.Insert(emoteIndex + 1, new EmoteConfig() { Enabled = e.Enabled, Emote = linked, Offset = new Vector3(e.Offset.X, e.Offset.Y, e.Offset.Z), Rotation = e.Rotation });
                                         }
 
                                         ImGui.SameLine();
 
-                                        if (ImGuiExt.IconButton(FontAwesomeIcon.Trash, null, ImGui.GetIO().KeyShift, "Remove Linked Emote", "Hold SHIFT")) {
+                                        if (ImGuiExt.IconButton(FontAwesomeIcon.Trash, null, ImGui.GetIO().KeyShift, "删除链接的情感动作", "按住SHIFT")) {
                                             e.LinkedEmotes.Remove(linked);
                                         }
 
@@ -1500,7 +1500,7 @@ public class ConfigWindow : Window {
                                 if (fl) {
                                     fl = false;
                                     ImGui.SameLine();
-                                    ImGui.TextDisabled("Linked Emotes use the same offset as their base.");
+                                    ImGui.TextDisabled("链接的情感动作使用与其基础相同的偏移量。");
                                 }
 
                                 ImGui.TableNextColumn();
@@ -1510,7 +1510,7 @@ public class ConfigWindow : Window {
 
                                 
                                 
-                                ShowActiveOffsetMarker(activeCharacterAsCharacter != null && activeEmote == linked, e.Enabled, activeHeelConfig == e, "Emote is currently being performed");
+                                ShowActiveOffsetMarker(activeCharacterAsCharacter != null && activeEmote == linked, e.Enabled, activeHeelConfig == e, "情感动作当前正在执行");
                             }
 
                             if (characterConfig is not IpcCharacterConfig) {
@@ -1530,9 +1530,9 @@ public class ConfigWindow : Window {
 
                                 if (ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled) && activeCharacterAsCharacter != null) {
                                     if (activeEmote == null) {
-                                        ImGui.SetTooltip($"Link Active Emote");
+                                        ImGui.SetTooltip($"链接激活的情感动作");
                                     } else {
-                                        ImGui.SetTooltip($"Link Active Emote:\n{activeEmote.Name}");
+                                        ImGui.SetTooltip($"链接激活的情感动作：\n{activeEmote.Name}");
                                     }
                                     
                                 }
@@ -1540,14 +1540,14 @@ public class ConfigWindow : Window {
                                 ImGui.SameLine();
 
                                 ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X);
-                                if (ImGui.BeginCombo("##addLinkedEmote", "Link Emote...", ImGuiComboFlags.HeightLargest)) {
+                                if (ImGui.BeginCombo("##addLinkedEmote", "链接情感动作...", ImGuiComboFlags.HeightLargest)) {
                                     if (ImGui.IsWindowAppearing()) {
                                         searchInput = string.Empty;
                                         ImGui.SetKeyboardFocusHere();
                                     }
 
                                     ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X);
-                                    ImGui.InputTextWithHint("##searchInput", "Search...", ref searchInput, 128);
+                                    ImGui.InputTextWithHint("##searchInput", "搜索...", ref searchInput, 128);
 
                                     if (ImGui.BeginChild("##searchScroll", new Vector2(ImGui.GetContentRegionAvail().X, 300))) {
                                         
@@ -1596,22 +1596,22 @@ public class ConfigWindow : Window {
 
                     if (ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled) && activeCharacterAsCharacter != null) {
                         if (currentEmote == null) {
-                            ImGui.SetTooltip($"Add Current Emote");
+                            ImGui.SetTooltip($"添加当前情感动作");
                         } else {
-                            ImGui.SetTooltip($"Add Current Emote:\n{currentEmote.Name}");
+                            ImGui.SetTooltip($"添加当前情感动作：\n{currentEmote.Name}");
                         }
                     }
 
                     ImGui.SameLine();
                     ImGui.SetNextItemWidth(250 * ImGuiHelpers.GlobalScale);
-                    if (ImGui.BeginCombo("##addCurrentEmote", "Add Emote...", ImGuiComboFlags.HeightLargest)) {
+                    if (ImGui.BeginCombo("##addCurrentEmote", "添加情感动作...", ImGuiComboFlags.HeightLargest)) {
                         if (ImGui.IsWindowAppearing()) {
                             searchInput = string.Empty;
                             ImGui.SetKeyboardFocusHere();
                         }
 
                         ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X);
-                        ImGui.InputTextWithHint("##searchInput", "Search...", ref searchInput, 128);
+                        ImGui.InputTextWithHint("##searchInput", "搜索...", ref searchInput, 128);
                         if (ImGui.BeginChild("##searchScroll", new Vector2(ImGui.GetContentRegionAvail().X, 300))) {
                             using (ImRaii.PushColor(ImGuiCol.FrameBgHovered, ImGui.GetColorU32(ImGuiCol.ButtonHovered))) {
                                 foreach (var emote in EmoteIdentifier.List) {
@@ -1634,30 +1634,30 @@ public class ConfigWindow : Window {
             }
 
             ImGuiExt.Separator();
-            ImGuiExt.FloatEditor("Default Offset", ref characterConfig.DefaultOffset, 0.001f, allowPlusMinus: characterConfig is not IpcCharacterConfig);
+            ImGuiExt.FloatEditor("默认偏移", ref characterConfig.DefaultOffset, 0.001f, allowPlusMinus: characterConfig is not IpcCharacterConfig);
             ImGui.SameLine();
-            ImGuiComponents.HelpMarker("The default offset will be used for all footwear that has not been configured.");
+            ImGuiComponents.HelpMarker("默认偏移将用于所有尚未配置的鞋类。");
             ImGui.SameLine();
-            ShowActiveOffsetMarker(activeCharacterAsCharacter != null && usingDefault, true, activeHeelConfig == characterConfig, "Default offset is active");
+            ShowActiveOffsetMarker(activeCharacterAsCharacter != null && usingDefault, true, activeHeelConfig == characterConfig, "默认偏移处于激活状态");
         }
 
         if (Plugin.IsDebug && activeCharacter != null) {
             if (ImGui.TreeNode("Debug Information")) {
-                if (ImGui.TreeNode("Active Offset")) {
+                if (ImGui.TreeNode("激活偏移")) {
                     if (activeHeelConfig == null) {
-                        ImGui.TextDisabled("No Active Offset");
+                        ImGui.TextDisabled("无激活的偏移");
                     } else if (activeHeelConfig is CharacterConfig cc) {
-                        ImGui.Text($"Using Default Offset: {cc.DefaultOffset}");
+                        ImGui.Text($"使用默认偏移：{cc.DefaultOffset}");
                     } else {
                         Util.ShowStruct(activeHeelConfig, 0);
                     }
                     ImGui.TreePop();
                 }
                 
-                if (ImGui.TreeNode("Emote")) {
+                if (ImGui.TreeNode("情感动作")) {
                     var emoteId = EmoteIdentifier.Get(activeCharacterAsCharacter);
                     if (emoteId == null) {
-                        ImGui.TextDisabled("None");
+                        ImGui.TextDisabled("无");
                     } else {
                         Util.ShowObject(emoteId);
                     }
@@ -1724,12 +1724,12 @@ public class ConfigWindow : Window {
                 using (ImRaii.PushColor(ImGuiCol.Text, ImGuiColors.HealerGreen, isEnabled && isActive))
                 using (ImRaii.PushColor(ImGuiCol.Text, ImGuiColors.DalamudViolet, isEnabled && isActive == false))
                 using (ImRaii.PushColor(ImGuiCol.Text, ImGui.GetColorU32(ImGuiCol.TextDisabled), isEnabled == false)) {
-                    ImGui.Text($"This entry is {(isActive ? "ACTIVE" : "INACTIVE")}");
+                    ImGui.Text($"此条设置{(isActive ? "已激活" : "未激活")}");
                     if (!isActive) {
                         if (isEnabled) {
-                            ImGui.Text("Another entry is being applied first.");
+                            ImGui.Text("正在优先使用另一条设置。");
                         } else {
-                            ImGui.Text("This entry has been disabled.");
+                            ImGui.Text("此条设置已被禁用。");
                         }
                     }
                 }
@@ -1773,7 +1773,7 @@ public class ConfigWindow : Window {
     }
 
     private string? GetModelName(ushort modelId, ModelSlot slot, bool nullOnNoMatch = false) {
-        if (modelId == 0) return "Smallclothes" + (slot == ModelSlot.Feet ? " (Barefoot)" : "");
+        if (modelId == 0) return "Smallclothes" + (slot == ModelSlot.Feet ? " (赤脚)" : "");
 
         if (shoeModelList.Value.TryGetValue((modelId, slot), out var shoeModel)) {
             return shoeModel.Name ?? $"Unknown#{modelId}";
@@ -1787,7 +1787,7 @@ public class ConfigWindow : Window {
 
         try {
             if (modelId == 0) {
-                ImGui.Text("Smallclothes (Barefoot)");
+                ImGui.Text("Smallclothes (赤脚)");
                 return;
             }
 
@@ -1796,7 +1796,7 @@ public class ConfigWindow : Window {
                     ImGui.Text($"{i.Name.ToDalamudString().TextValue}");
                 }
             } else {
-                ImGui.Text($"Unknown Item (Model#{modelId})");
+                ImGui.Text($"未知物品 (Model#{modelId})");
             }
         } finally {
             ImGui.EndTooltip();
@@ -1862,24 +1862,24 @@ public class ConfigWindow : Window {
                 var message = new SeStringBuilder();
                 message.AddText("[");
                 message.AddUiForeground($"{plugin.Name}", 48);
-                message.AddText("] The config window is currently hidden");
+                message.AddText("] 设置窗口当前处于隐藏状态：");
 
                 if (PluginService.ClientState.IsGPosing) {
-                    message.AddText(" in GPose. ");
+                    message.AddText("处于集体动作");
                     message.AddUiForeground(37);
                     message.Add(clickAllowInGposePayload);
-                    message.AddText("Click Here");
+                    message.AddText("点击这里");
                     message.Add(RawPayload.LinkTerminator);
                     message.AddUiForegroundOff();
-                    message.AddText(" to allow the config window to be shown in GPose.");
+                    message.AddText("以允许在集体动作中显示设置窗口。");
                 } else if (PluginService.PluginInterface.UiBuilder.CutsceneActive) {
-                    message.AddText(" in cutscenes. ");
+                    message.AddText("处于过场动画");
                     message.AddUiForeground(37);
                     message.Add(clickAllowInCutscenePayload);
-                    message.AddText("Click Here");
+                    message.AddText("点击这里");
                     message.Add(RawPayload.LinkTerminator);
                     message.AddUiForegroundOff();
-                    message.AddText(" to allow the config window to be shown in cutscenes.");
+                    message.AddText("以允许在过场动画中显示设置窗口。");
                 } else {
                     // Unknown reason, don't mention it at all
                     return;
@@ -1904,20 +1904,20 @@ public class ConfigWindow : Window {
             get {
                 if (nameCache != null) return nameCache;
                 nameCache = Items.Count switch {
-                    0 => $"Unknwon#{Id}",
+                    0 => $"未知#{Id}",
                     1 => Items[0].Name.ToDalamudString().TextValue,
-                    2 => string.Join(" and ", Items.Select(i => i.Name.ToDalamudString().TextValue)),
-                    > 3 => $"{Items[0].Name.ToDalamudString().TextValue} & {Items.Count - 1} others.",
+                    2 => string.Join("和", Items.Select(i => i.Name.ToDalamudString().TextValue)),
+                    > 3 => $"{Items[0].Name.ToDalamudString().TextValue} & {Items.Count - 1} 个其他同模装备。",
                     _ => string.Join(", ", Items.Select(i => i.Name.ToDalamudString().TextValue))
                 };
 
                 switch (Slot) {
                     case ModelSlot.Legs: {
-                        nameCache = $"[Legs] {nameCache}";
+                        nameCache = $"[腿部装备] {nameCache}";
                         break;
                     }
                     case ModelSlot.Top: {
-                        nameCache = $"[Top] {nameCache}";
+                        nameCache = $"[身体装备] {nameCache}";
                         break;
                     }
                 }
